@@ -4,10 +4,23 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from tools import web_search, scrape_url
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+openrouter_api_key = os.getenv("OPEN_ROUTER_API_KEY")
+
+if not openrouter_api_key:
+  raise RuntimeError(
+    "Missing OpenRouter credentials. Set OPEN_ROUTER_API_KEY in .env."
+  )
+
+llm = ChatOpenAI(
+  model=os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini"),
+  api_key=openrouter_api_key,
+  base_url="https://openrouter.ai/api/v1",
+  temperature=0,
+)
 
 # 1st agent = web search agent
 def build_search_aagent():
